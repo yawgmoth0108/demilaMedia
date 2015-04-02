@@ -1,7 +1,5 @@
-define(function (require, exports, module){
-	var mz = require("mz"),
-		swfobject = null,
-		tmpU = navigator.userAgent,
+(function (WIN, DOC, $, UND){
+	var tmpU = navigator.userAgent,
 		yBrowser = {
 			versions:function(){
 				return {
@@ -23,11 +21,8 @@ define(function (require, exports, module){
 					isIE7: tmpU.indexOf("MSIE 7.0") > -1
 				};
 			}()
-		};
-
-return function (jquery){
-(function (WIN, DOC, $, UND){
-	var demilamedia = function(){
+		},
+		demilamedia = function(){
 		},
 		mainObjs = {
 			mainObjects: [],
@@ -115,7 +110,7 @@ return function (jquery){
 	}
 	demilamedia.init = function(options){
 		$.extend(defaultOption, options);
-		/*if(!mz.audio || !mz.video){
+		/*if(!Modernizr.audio || !Modernizr.video){
 			flashplayer = {need: true, statue: "loading"};
 			require.async(["jwplayer", "jwplayer.html5"], function(jw, jwh5){
 				jw();
@@ -319,7 +314,6 @@ return function (jquery){
 		if(img.width > defaultOption.maxImgW){
 			img.height = parseInt(img.height * defaultOption.maxImgW / img.width);
 			img.width = defaultOption.maxImgW;
-			console.log(img.width + ", " + img.height);
 		}
 		if(img.height > defaultOption.maxImgH){
 			img.width = parseInt(img.width * defaultOption.maxImgH / img.height);
@@ -382,7 +376,7 @@ return function (jquery){
 					</audio>";
 			}
 			return tmp;
-		}else if(mz.audio){
+		}else if(Modernizr.audio){
 		 	tmp = "<audio id='demilamedia_sound' controls='controls' autoplay='autoplay'>\
 				<source src='" + path + "' type='audio/" + getFileName(path) + "' />\
 				<embed src='" + path + "' />\
@@ -402,7 +396,7 @@ return function (jquery){
 					</video>";
 			}
 			return tmp;
-		}else if(mz.video){
+		}else if(Modernizr.video){
 			tmp = "<video id='demilamedia_video' controls='controls' autoplay='autoplay'>\
 					<source src='" + path + "' type='video/" + getFileName(path) + "' />\
 					</video>";
@@ -526,6 +520,4 @@ return function (jquery){
 			a.appendChild(e)
 		}
 	}
-})(window, document, jquery);
-}
-});
+})(window, document, jQuery);

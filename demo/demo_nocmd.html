@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>无CMD规范</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<link href="styles/default.css" rel="stylesheet" />
+<link href="../src/jquery.demilamedia.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="pagebg">
+	<div class="pagecontent">
+		<h1>demila</h1>
+		<p>demilaMedia是一款基于jquery的跨平台预览插件</p>
+		<a id="testlink" href="javascript:void(0);" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+	</div>
+</div>
+<script type="text/javascript" src="../jq.js"></script>
+<script type="text/javascript" src="../modernizr.js"></script>
+<script type="text/javascript" src="../src/jquery.demilamedia.js"></script>
+<script>
+$(function(){
+	$("#testlink").on("click", function(){
+		$.demilamedia.open([
+			{href: "medias/test1.jpg", title: "预览1"},
+			{href: "medias/test2.jpg", title: "预览2"},
+			{href: "medias/test3.jpg", title: "预览3"},
+			{href: "medias/test.mp3", title: "预览4"},
+			{href: "medias/test.mp4", title: "预览5"}
+		]);
+		return false;
+	});
+});
+</script>
+</body>
+</html>
