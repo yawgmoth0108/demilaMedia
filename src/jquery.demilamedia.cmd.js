@@ -29,13 +29,9 @@ return function (jquery){
 (function (WIN, DOC, $, UND){
 	var demilamedia = function(){
 		},
-		mainObjs = {
-			mainObjects: [],
-			loadedObjects: []
+		cacheArray = {
 		},
-		mainObj_num = 0,
-		loaded_num = 0,
-		currentNum = -1,
+		currentStr = "",
 		domHtml_mask = "<div id='demilamedia_mask'></div>",
 		domHtml_tit = "<div id='demilamedia_tit'></div>",
 		domHtml_tip = "<div id='demilamedia_tips'></div>",
@@ -78,20 +74,35 @@ return function (jquery){
 		},
 		videoFileCheck = /^mp4$/i,
 		soundFileCheck = /^mp3|ogg|wav$/i,
-		flashplayer = {need: false, statue: ""};
+		flashplayer = {need: false, statue: ""},
+		cacheObj = function(){
+			this.mainObjects = [];
+			this.loadedObjects = [];
+			this.mainObj_num = 0;
+			this.loaded_num = 0;
+			this.currentNum = -1;
+		};
+	cacheObj.prototype = {
+	}
 
 	demilamedia.open = function(objs){
-		objInit(objs);
+		if(isString(objs)){
+			currentStr = objs;
+		}else{
+			currentStr = "mainObjs";
+			objInit(objs);
+		}
 		//console.log($hxlb);
 		$hxlb_mask.show();
 		$hxlb.show();
 		loadshow();
 		makeMainSize(defaultOption.defW, defaultOption.defH, function(){
-			demilamedia.currentObj(0);
+			demilamedia.currentObj(cacheArray[currentStr].currentNum);
 		}, true);
-		if(objs.length <= 1){
-			$hxlb_arrs.children().hide();
+		if(cacheArray[currentStr].mainObj_num <= 1){
+			$hxlb_arrs.hide();
 		}else{
+			$hxlb_arrs.show();
 			var $events = $._data($hxlb_lbtn[0], "events");
 			if(!($events && $events["click"])){
 				$hxlb_lbtn.on("click", function(){
@@ -164,28 +175,26 @@ return function (jquery){
 		makeTxtPos();
 	}
 	demilamedia.prevObj = function(){
-		currentNum--;
-		if(currentNum < 0){
-			//currentNum = mainObj_num - 1;
-			currentNum++;
+		cacheArray[currentStr].currentNum--;
+		if(cacheArray[currentStr].currentNum < 0){
+			cacheArray[currentStr].currentNum++;
 		}else{
-			demilamedia.currentObj(currentNum);
+			demilamedia.currentObj(cacheArray[currentStr].currentNum);
 		}
 	}
 	demilamedia.nextObj = function(){
-		currentNum++;
-		if(currentNum > mainObj_num - 1){
-			//currentNum = 0;
-			currentNum--;
+		cacheArray[currentStr].currentNum++;
+		if(cacheArray[currentStr].currentNum > cacheArray[currentStr].mainObj_num - 1){
+			cacheArray[currentStr].currentNum--;
 		}else{
-			demilamedia.currentObj(currentNum);
+			demilamedia.currentObj(cacheArray[currentStr].currentNum);
 		}
 	}
 	demilamedia.close = function(){
 		$hxlb_main.html("");
 		$hxlb_arrs.children().hide();
 		txthide();
-		currentNum = 0;
+		cacheArray[currentStr].currentNum = 0;
 		makeMainSize(0, 0, function(){
 			$hxlb.hide();
 			$hxlb_mask.hide();
@@ -193,13 +202,14 @@ return function (jquery){
 		}, true);
 	}
 	demilamedia.currentObj = function(idx){
-		//console.log(mainObjs);
 		loadshow();
 		txthide();
-		//console.log($hxlb_loading);
-		//console.log(mainObjs.mainObjects[idx]);
-		if(mainObjs.loadedObjects[idx]){
-			var obj = mainObjs.loadedObjects[idx];
+		if(idx < 0){
+			debug("demilamedia.currentObj: currentNum error");
+			idx = 0;
+		}
+		if(cacheArray[currentStr].loadedObjects[idx]){
+			var obj = cacheArray[currentStr].loadedObjects[idx];
 			if(isImage(obj)){
 				obj = checkImgSize(obj);
 				makeMainSize(obj.width, obj.height, function(){
@@ -212,7 +222,7 @@ return function (jquery){
 					var ss = getSoundHtml(obj);
 					if(ss.flash){
 						$hxlb_main.html(ss.html);
-						flash_add("demilamedia_flash", "/static/scripts/plug/demilamedia/videoplayer/", defaultOption.soundW, defaultOption.soundH, {playlist: obj});
+						video_add("demilamedia_flash", defaultOption.soundW, defaultOption.soundH, obj);
 					}else{
 						$hxlb_main.html(ss);
 					}
@@ -224,7 +234,7 @@ return function (jquery){
 					var ss = getVideoHtml(obj);
 					if(ss.flash){
 						$hxlb_main.html(ss.html);
-						flash_add("demilamedia_flash", "/static/scripts/plug/demilamedia/videoplayer/", defaultOption.videoW, defaultOption.videoH, {playlist: obj});
+						video_add("demilamedia_flash", defaultOption.videoW, defaultOption.videoH, obj);
 					}else{
 						$hxlb_main.html(ss);
 					}
@@ -233,11 +243,11 @@ return function (jquery){
 				});
 			}
 		}else{
-			var paths = mainObjs.mainObjects[idx].href;
+			var paths = cacheArray[currentStr].mainObjects[idx].href;
 			if(isImage(paths)){
 				var img = new Image();
 				img.src = paths;
-				mainObjs.loadedObjects[idx] = img;
+				cacheArray[currentStr].loadedObjects[idx] = img;
 				img.onload = function(){
 					img = checkImgSize(img);
 					makeMainSize(img.width, img.height, function(){
@@ -247,15 +257,15 @@ return function (jquery){
 					});
 				}
 				img.onabort = function(){
-					mainObjs.loadedObjects.splice(idx, 1);
+					cacheArray[currentStr].loadedObjects.splice(idx, 1);
 				}
 			}else if(isSound(paths)){
-				mainObjs.loadedObjects[idx] = paths;
+				cacheArray[currentStr].loadedObjects[idx] = paths;
 				makeMainSize(defaultOption.soundW, defaultOption.soundH, function(){
 					var ss = getSoundHtml(paths);
 					if(ss.flash){
 						$hxlb_main.html(ss.html);
-						flash_add("demilamedia_flash", "/static/scripts/plug/demilamedia/videoplayer/", defaultOption.soundW, defaultOption.soundH, {playlist: paths});
+						video_add("demilamedia_flash", defaultOption.soundW, defaultOption.soundH, paths);
 					}else{
 						$hxlb_main.html(ss);
 					}
@@ -263,12 +273,12 @@ return function (jquery){
 					makeThePage();
 				});
 			}else if(isVideo(paths)){
-				mainObjs.loadedObjects[idx] = paths;
+				cacheArray[currentStr].loadedObjects[idx] = paths;
 				makeMainSize(defaultOption.videoW, defaultOption.videoH, function(){
 					var ss = getVideoHtml(paths);
 					if(ss.flash){
 						$hxlb_main.html(ss.html);
-						flash_add("demilamedia_flash", "/static/scripts/plug/demilamedia/videoplayer/", defaultOption.videoW, defaultOption.videoH, {playlist: paths});
+						video_add("demilamedia_flash", defaultOption.videoW, defaultOption.videoH, paths);
 					}else{
 						$hxlb_main.html(ss);
 					}
@@ -277,27 +287,41 @@ return function (jquery){
 				});
 			}
 		}
-		$hxlb_tit.html(mainObjs.mainObjects[idx].title);
-		currentNum = idx;
-		if(currentNum == 0){
+		$hxlb_tit.html(cacheArray[currentStr].mainObjects[idx].title);
+		cacheArray[currentStr].currentNum = idx;
+		if(cacheArray[currentStr].currentNum == 0){
 			$hxlb_lbtn.addClass("disable");
 		}else{
 			$hxlb_lbtn.removeClass("disable");
 		}
-		if(currentNum == mainObj_num - 1){
+		if(cacheArray[currentStr].currentNum == cacheArray[currentStr].mainObj_num - 1){
 			$hxlb_rbtn.addClass("disable");
 		}else{
 			$hxlb_rbtn.removeClass("disable");
 		}
 	}
 	$.fn.demilamedia = function(options){
-		//alert(options);
-		console.log("building...");
+		$.fn.demilamedia.defaults = $.extend($.fn.demilamedia.defaults, options);
+		return this.each(function(e){
+			var $this = $(this),
+				tmp = $this.attr("rel"),
+				objs = [];
+			if(!cacheArray[tmp]){
+				cacheArray[tmp] = new cacheObj();
+			}
+			objInit(tmp, {href: $this.attr("href"), title: $this.attr("title")});
+			$this.on("click", function(){
+				cacheArray[$(this).attr("rel")].currentNum = e;
+				demilamedia.open(tmp);
+				return false;
+			});
+		});
 	}
 	$.fn.demilamedia.open = function(objs){
 		//alert(objs.length);
 		console.log("building...");
 	}
+	$.fn.demilamedia.defaults = defaultOption;
 	$.extend({
 		demilamedia: demilamedia
 	});
@@ -328,7 +352,7 @@ return function (jquery){
 		return img;
 	}
 	function makeThePage(){
-		$hxlb_num.html((currentNum + 1) + "/" + mainObj_num);
+		$hxlb_num.html((cacheArray[currentStr].currentNum + 1) + "/" + cacheArray[currentStr].mainObj_num);
 	}
 	function makeMainSize(w, h, callback, arrhide){
 		$hxlb_arrs.children().hide();
@@ -349,11 +373,22 @@ return function (jquery){
 			}
 		});
 	}
-	function objInit(objs){
+	function objInit(objs, t){
 		if(isArray(objs)){
-			mainObj_num = objs.length;
-			loaded_num = 0;
-			mainObjs.mainObjects = objs;
+			if(!cacheArray[currentStr]){
+				cacheArray[currentStr] = new cacheObj();
+			}
+			cacheArray[currentStr].mainObj_num = objs.length;
+			cacheArray[currentStr].loaded_num = 0;
+			cacheArray[currentStr].mainObjects = objs;
+			cacheArray[currentStr].currentNum = 0;
+		}else if(isString(objs)){
+			if(!cacheArray[objs]){
+				cacheArray[objs] = new cacheObj();
+			}
+			cacheArray[objs].mainObj_num++;
+			cacheArray[objs].loaded_num = 0;
+			cacheArray[objs].mainObjects.push(t);
 		}
 	}
 	function txthide(){
@@ -485,36 +520,56 @@ return function (jquery){
 		d = d.replace(".", "");
 		return d;
 	}
-	function flash_add(domid, flashpath, flash_w, flash_h, flash_arg){
+	function video_add(domid, flash_w, flash_h, videopath){
 		/*if(flashplayer.need && flashplayer.statue != "finish"){
 			setTimeout(function(){
-				flash_add(domid, flashpath, flash_w, flash_h, flash_arg);
+				video_add(domid, flash_w, flash_h, flash_arg);
 			}, 500);
 			return;
 		}*/
+		var flash_arg = {},
+			params = {
+				allowfullscreen: "true",
+				allowscriptaccess: "always",
+				seamlesstabbing: "true",
+				autostart: "true"
+			};
+		$.extend(flash_arg, {file: videopath});
+		flash_add(domid, "../src/videoplayer/player.swf", flash_w, flash_h, params, flash_arg);
+	}
+	function flash_add(domid, flashpath, flash_w, flash_h, params, flash_arg){
 	    var mainDom = document.getElementById(domid),
 	    	main_id = mainDom.id,
-	    	playerPath = "/static/scripts/plug/demilamedia/videoplayer/player.swf",
-	    	n = "opaque";
-		
+	    	n = "opaque",
+			fv = "";
+		for(var j in flash_arg){
+			fv += j + "=" + flash_arg[j];
+		}
 	    if(yBrowser.versions.isIE){
-	    	mainDom.innerHTML = '\x3cobject classid\x3d"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width\x3d"100%" height\x3d"100%" id\x3d"' + main_id + '" name\x3d"' + main_id + '" tabindex\x3d"0"\x3e\x3cparam name\x3d"movie" value\x3d"' + playerPath + '"\x3e\x3cparam name\x3d"allowfullscreen" value\x3d"true"\x3e\x3cparam name\x3d"allowscriptaccess" value\x3d"always"\x3e\x3cparam name\x3d"seamlesstabbing" value\x3d"true"\x3e\x3cparam name\x3d"wmode" value\x3d"' + n + '"\x3e\x3cparam name\x3d"bgcolor" value\x3d"#000000"\x3e\x3cparam name\x3d"autostart" value\x3d"true"\x3e\x3cparam name\x3d"flashvars" value\x3d"file=' + flash_arg.playlist + '"\x3e\x3c/object\x3e';
+	    	var t = "";
+	    	for(var i in params){
+	    		t += "<param name='" + i + "' value='" + params[i] + "'>";
+	    	}
+	    	mainDom.innerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%" id="' + main_id + '" name="' + main_id + '" tabindex="0">\
+	    	<param name="movie" value="' + flashpath + '">' + t + '\
+	    	<param name="bgcolor" value="#000000">\
+	    	<param name="wmode" value="' + n + '">\
+	    	<param name="flashvars" value="' + fv + '">\
+	    	</object>';
 	    }else{
 	    	var f = document.createElement("object");
 	    	f.setAttribute("type", "application/x-shockwave-flash");
-	    	f.setAttribute("data", playerPath);
 	    	f.setAttribute("width", "100%");
 	    	f.setAttribute("height", "100%");
 	    	f.setAttribute("bgcolor", "#000000");
+	    	f.setAttribute("data", flashpath);
 	    	f.setAttribute("id", main_id);
 	    	f.setAttribute("name", main_id);
-	    	f.setAttribute("flashvars", "file=" + flash_arg.playlist);
-	    	f.className = "jwswf";
-	    	setParam(f, "file", flash_arg.playlist);
-	    	setParam(f, "allowfullscreen", "true");
-	    	setParam(f, "allowscriptaccess", "always");
-	    	setParam(f, "seamlesstabbing", "true");
-	    	setParam(f, "autostart", "true");
+	    	f.setAttribute("flashvars", fv);
+	    	for(var i in params){
+	    		setParam(f, i, params[i]);
+	    	}
+	    	//setParam(f, "file", flash_arg.file);
 	    	setParam(f, "wmode", n);
 	    	mainDom.parentNode.replaceChild(f, mainDom);
 	    }
@@ -523,6 +578,11 @@ return function (jquery){
 			e.setAttribute("name", b);
 			e.setAttribute("value", c);
 			a.appendChild(e)
+		}
+	}
+	function debug(txt){
+		if(window.console && window.console.log){
+			console.log(txt);
 		}
 	}
 })(window, document, jquery);

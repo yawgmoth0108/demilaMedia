@@ -13,7 +13,17 @@
 	<div class="pagecontent">
 		<h1>demila</h1>
 		<p>demilaMedia是一款基于jquery的跨平台预览插件</p>
-		<a id="testlink" href="javascript:void(0);" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		<p><a id="testlink" href="javascript:void(0);" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a></p>
+		<p>
+			<a class="testlink2" rel="demilamedia[test]" href="medias/test1.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink2" rel="demilamedia[test]" href="medias/test2.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink2" rel="demilamedia[test]" href="medias/test3.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		</p>
+		<p>
+			<a class="testlink3" rel="demilamedia[test2]" href="medias/test3.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink3" rel="demilamedia[test2]" href="medias/test.mp3" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink3" rel="demilamedia[test2]" href="medias/test.mp4" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		</p>
 	</div>
 </div>
 <script type="text/javascript" src="../sea.js"></script>
@@ -30,6 +40,8 @@ seajs.use(["jq.cmd", "src/jquery.demilamedia.cmd"], function($, demilamedia){
 		]);
 		return false;
 	});
+	$(".testlink2").demilamedia();
+	$(".testlink3").demilamedia();
 });
 </script>
 </body>

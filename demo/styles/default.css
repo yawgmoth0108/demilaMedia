@@ -12,6 +12,7 @@ body{
 	min-width: 1024px;
 	margin: 0 auto;
 	padding: 20px 0;
+	text-align: left;
 }
 .pagecontent h1{
 	text-align: center;
@@ -27,6 +28,7 @@ body{
 .pagecontent p{
 	color: #fff;
 	margin-bottom: 30px;
+	text-align: center;
 }
 .pagecontent a.idxlink{
 	width: 20%;
@@ -37,4 +39,8 @@ body{
 	height: 46px;
 	line-height: 46px;
 	border-radius: 5px;
+	text-align: center;
+}
+.pagecontent .links{
+	text-align: center;
 }
