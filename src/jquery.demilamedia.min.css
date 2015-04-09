@@ -14,4 +14,4 @@
 #demilamedia #demilamedia_arrbtn a#demilamedia_leftbtn.disable{cursor:default}#demilamedia #demilamedia_arrbtn a#demilamedia_rightbtn.disable{cursor:default}
 #demilamedia #demilamedia_arrbtn a#demilamedia_leftbtn.disable:hover{background-position:0 0}#demilamedia #demilamedia_arrbtn a#demilamedia_rightbtn.disable:hover{background-position:-45px 0}
 #demilamedia #demilamedia_closebtn{right:-10px;top:-10px;position:absolute;width:30px;height:30px;background:url(images/icons.png) no-repeat 5px 2px;overflow:hidden;cursor:pointer;text-indent:-99999px}
-#demilamedia #demilamedia_sound{width:100%;top:50%;margin-top:-10px;position:relative}#demilamedia #demilamedia_video{width:100%;height:100%}
+#demilamedia #demilamedia_sound{width:100%;top:50%;margin-top:-10px;position:relative}#demilamedia #demilamedia_video,#demilamedia #demilamedia_iframe{width:100%;height:100%}

@@ -42,6 +42,8 @@
 			soundH: 80,
 			videoW: 650,
 			videoH: 330,
+			iframeW: 650,
+			iframeH: 480,
 			defW: 120,
 			defH: 100,
 			minImgW: 200,
@@ -50,7 +52,8 @@
 			maxH: $(WIN).height(),
 			maxImgW: $(WIN).width() - 100,
 			maxImgH: $(WIN).height() - 120,
-			tips: "按ESC键返回 按方向键切换"
+			tips: "按ESC键返回 按方向键切换",
+			flashpath: "../src/videoplayer/player.swf"
 		},
 		$hxlb_mask = null,
 		$hxlb = null,
@@ -64,8 +67,9 @@
 		$hxlb_num = null,
 		filecheck = {
 			img: /^jpg|png|gif$/i,
-			video: /^swf|mp4|flv|wmv$/i,
-			sound: /^wma|wav|mp3$/i
+			video: /^mp4|flv|wmv$/i,
+			sound: /^wma|wav|mp3$/i,
+			flash: /^swf$/i
 		},
 		videoFileCheck = /^mp4$/i,
 		soundFileCheck = /^mp3|ogg|wav$/i,
@@ -87,11 +91,6 @@
 			currentStr = "mainObjs";
 			objInit(objs);
 		}
-		//console.log(cacheArray[currentStr]);
-		//reset cache
-		//mainObjs.mainObjects = [];
-		//mainObjs.loadedObjects = [];
-		//console.log($hxlb);
 		$hxlb_mask.show();
 		$hxlb.show();
 		loadshow();
@@ -203,7 +202,6 @@
 	demilamedia.currentObj = function(idx){
 		loadshow();
 		txthide();
-		//console.log(cacheArray[currentStr]);
 		if(idx < 0){
 			debug("demilamedia.currentObj: currentNum error");
 			idx = 0;
@@ -238,6 +236,19 @@
 					}else{
 						$hxlb_main.html(ss);
 					}
+					makeTxtPos();
+					makeThePage();
+				});
+			}else if(isFlash(obj)){
+				makeMainSize(defaultOption.videoW, defaultOption.videoH, function(){
+					$hxlb_main.html(getFlashHtml());
+					flash_add("demilamedia_flash", obj, defaultOption.videoW, defaultOption.videoH, {}, {});
+					makeTxtPos();
+					makeThePage();
+				});
+			}else{
+				makeMainSize(defaultOption.iframeW, defaultOption.iframeH, function(){
+					$hxlb_main.html(getIframeHtml(obj));
 					makeTxtPos();
 					makeThePage();
 				});
@@ -285,6 +296,21 @@
 					makeTxtPos();
 					makeThePage();
 				});
+			}else if(isFlash(paths)){
+				cacheArray[currentStr].loadedObjects[idx] = paths;
+				makeMainSize(defaultOption.videoW, defaultOption.videoH, function(){
+					$hxlb_main.html(getFlashHtml());
+					flash_add("demilamedia_flash", paths, defaultOption.videoW, defaultOption.videoH, {}, {});
+					makeTxtPos();
+					makeThePage();
+				});
+			}else{
+				cacheArray[currentStr].loadedObjects[idx] = paths;
+				makeMainSize(defaultOption.iframeW, defaultOption.iframeH, function(){
+					$hxlb_main.html(getIframeHtml(paths));
+					makeTxtPos();
+					makeThePage();
+				});
 			}
 		}
 		$hxlb_tit.html(cacheArray[currentStr].mainObjects[idx].title);
@@ -306,8 +332,6 @@
 			var $this = $(this),
 				tmp = $this.attr("rel"),
 				objs = [];
-			//console.log(tmp);
-			//objs = [{href: $this.attr("href"), title: $this.attr("title")}];
 			if(!cacheArray[tmp]){
 				cacheArray[tmp] = new cacheObj();
 			}
@@ -321,8 +345,7 @@
 	}
 	$.fn.demilamedia.open = function(objs){
 		//alert(objs.length);
-		console.log("building...");
-
+		debug("building...");
 	}
 	$.fn.demilamedia.defaults = defaultOption;
 	$.extend({
@@ -331,8 +354,6 @@
 	demilamedia.init();
 
 	function checkImgSize(img){
-		//console.log(img.width + "," + img.height);
-		//console.log(defaultOption);
 		if(img.width < defaultOption.minImgW){
 			img.height = parseInt(img.height * defaultOption.minImgW / img.width);
 			img.width = defaultOption.minImgW;
@@ -455,6 +476,9 @@
 	function getLoadHtml(){
 		return "<span class='loading'></span>";
 	}
+	function getIframeHtml(path){
+		return "<iframe frameborder='0' noresize='noresize' src='" + path + "' id='demilamedia_iframe' width='100%' height='100%'></iframe>";
+	}
 	function loadhide(){
 		//$hxlb_loading.hide();
 		$hxlb_main.html("");
@@ -502,6 +526,12 @@
 		}
 		return null;
 	}
+	function isFlash(obj){
+		if(isString(obj)){
+			return filecheck.flash.test(getFileName(obj));
+		}
+		return false;
+	}
 	function isArray(obj){
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	}
@@ -538,7 +568,7 @@
 				autostart: "true"
 			};
 		$.extend(flash_arg, {file: videopath});
-		flash_add(domid, "../src/videoplayer/player.swf", flash_w, flash_h, params, flash_arg);
+		flash_add(domid, defaultOption.flashpath, flash_w, flash_h, params, flash_arg);
 	}
 	function flash_add(domid, flashpath, flash_w, flash_h, params, flash_arg){
 	    var mainDom = document.getElementById(domid),

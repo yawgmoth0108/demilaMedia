@@ -13,17 +13,63 @@
 	<div class="pagecontent">
 		<h1>demila</h1>
 		<p>demilaMedia是一款基于jquery的跨平台预览插件</p>
+		<p>事件方式调用</p>
 		<p><a id="testlink" href="javascript:void(0);" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a></p>
+		<pre>
+$("#testlink").on("click", function(){
+	$.demilamedia.open([
+		{href: "medias/test1.jpg", title: "预览1"},
+		{href: "medias/test2.jpg", title: "预览2"},
+		{href: "medias/test3.jpg", title: "预览3"},
+		{href: "medias/test.mp3", title: "预览4"},
+		{href: "medias/test.mp4", title: "预览5"}
+	]);
+	return false;
+});
+		</pre>
+		<p>元素注册事件1（图片）</p>
 		<p>
 			<a class="testlink2" rel="demilamedia[test]" href="medias/test1.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
 			<a class="testlink2" rel="demilamedia[test]" href="medias/test2.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
 			<a class="testlink2" rel="demilamedia[test]" href="medias/test3.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
 		</p>
+		<p class="tit">JS脚本：</p>
+		<pre>
+$(".testlink2").demilamedia();
+		</pre>
+		<p class="tit">页面元素：</p>
+		<xmp>
+<a class="testlink2" rel="demilamedia[test]" href="medias/test3.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		</xmp>
+		<p>元素注册事件2（图片、音频、视频）</p>
 		<p>
 			<a class="testlink3" rel="demilamedia[test2]" href="medias/test3.jpg" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
 			<a class="testlink3" rel="demilamedia[test2]" href="medias/test.mp3" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
 			<a class="testlink3" rel="demilamedia[test2]" href="medias/test.mp4" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
 		</p>
+		<p class="tit">JS脚本：</p>
+		<pre>
+$(".testlink3").demilamedia();
+		</pre>
+		<p class="tit">页面元素：</p>
+		<xmp>
+<a class="testlink3" rel="demilamedia[test2]" href="medias/test.mp4" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		</xmp>
+		<p>元素注册事件3（flash、其他页面ajax、iframe）</p>
+		<p>
+			<a class="testlink4" rel="demilamedia[test3]" href="http://player.youku.com/player.php/Type/Folder/Fid/23643385/Ob/1/sid/XOTI4MDc4MDY4/v.swf" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink4" rel="demilamedia[test3]" href="medias/test.swf" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink4" rel="demilamedia[test3]" ajax-load="true" href="test.html" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+			<a class="testlink4" rel="demilamedia[test3]" href="http://player.youku.com/embed/XOTI4MDc4MDY4" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		</p>
+		<p class="tit">JS脚本：</p>
+		<pre>
+$(".testlink4").demilamedia();
+		</pre>
+		<p class="tit">页面元素：</p>
+		<xmp>
+<a class="testlink4" rel="demilamedia[test3]" href="http://player.youku.com/embed/XOTI4MDc4MDY4" title="测试图片1"><img src="medias/test1.jpg" alt="测试图片1" /></a>
+		</xmp>
 	</div>
 </div>
 <script type="text/javascript" src="../jq.js"></script>
@@ -43,6 +89,7 @@ $(function(){
 	});
 	$(".testlink2").demilamedia();
 	$(".testlink3").demilamedia();
+	$(".testlink4").demilamedia();
 });
 </script>
 </body>
